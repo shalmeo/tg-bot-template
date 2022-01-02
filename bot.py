@@ -30,7 +30,7 @@ async def main():
     filters.setup(dp)
     handlers.setup(dp)
 
-    await set_dafault_commands()
+    await set_dafault_commands(dp)
 
     # start
     try:
