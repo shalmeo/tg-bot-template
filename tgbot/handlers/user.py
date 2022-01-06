@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 from aiogram.types import Message
 
 
+@rate_limit(5, key='start')
 async def user_start(message: Message):
     await message.reply("Hello, user!")
 
