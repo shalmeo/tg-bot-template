@@ -6,8 +6,10 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 from tgbot.config import load_config
+from tgbot.misc.db import Database
 from tgbot.misc.set_bot_commands import set_dafault_commands
 from tgbot import middlewares, filters, handlers
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,13 @@ async def main():
 
     bot['config'] = config
 
-    middlewares.setup(dp)
+    # create database
+    db = Database(config)
+    await db.create()
+    await db.create_table_users()
+
+    # setup
+    middlewares.setup(dp, db)
     filters.setup(dp)
     handlers.setup(dp)
 

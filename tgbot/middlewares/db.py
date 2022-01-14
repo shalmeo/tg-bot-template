@@ -4,7 +4,10 @@ from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
 class DbMiddleware(LifetimeControllerMiddleware):
     skip_patterns = ["error", "update"]
 
+    def __init__(self, db):
+        super(DbMiddleware, self).__init__()
+        self.db = db
+
+
     async def pre_process(self, obj, data, *args):
-        db_session = obj.bot.get('db')
-        # Передаем данные из таблицы в хендлер
-        # data['some_model'] = await Model.get()
+        data['db'] = self.db
