@@ -1,13 +1,18 @@
 from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
 
 
-class DbMiddleware(LifetimeControllerMiddleware):
+class DbSessionMiddleware(LifetimeControllerMiddleware):
     skip_patterns = ["error", "update"]
 
-    def __init__(self, db):
-        super(DbMiddleware, self).__init__()
-        self.db = db
-
+    def __init__(self, session_pool):
+        super().__init__()
+        self.session_pool = session_pool
 
     async def pre_process(self, obj, data, *args):
-        data['db'] = self.db
+        session = self.session_pool()
+        data["session"] = session
+
+    async def post_process(self, obj, data, *args):
+        session = data.get("session")
+        if session:
+            await session.close()

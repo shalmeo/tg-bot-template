@@ -1,8 +1,11 @@
 from aiogram import Dispatcher
 
-from .db import DbMiddleware
+from .config import ConfigMiddleware
+from .db import DbSessionMiddleware
 from .throttling import ThrottlingMiddleware
 
-def setup(dp: Dispatcher, db):
-    dp.setup_middleware(DbMiddleware(db))
+
+def setup(dp: Dispatcher, config, db_pool):
+    dp.setup_middleware(ConfigMiddleware(config))
+    dp.setup_middleware(DbSessionMiddleware(db_pool))
     dp.setup_middleware(ThrottlingMiddleware())
