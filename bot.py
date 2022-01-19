@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from tgbot.config import load_config
+from tgbot.database.base import Base
 from tgbot.misc.set_bot_commands import set_dafault_commands
 from tgbot.database.utils import make_connection_string
 from tgbot import middlewares, filters, handlers
@@ -30,6 +31,9 @@ async def main():
         future=True,
         echo=False
     )
+    
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
     # Creating DB connections pool
     db_pool = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
