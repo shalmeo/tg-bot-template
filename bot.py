@@ -17,6 +17,7 @@ from glQiwiApi import QiwiWrapper
 
 from tgbot.config import load_config
 from tgbot.services.database.base import Base
+
 from tgbot.misc.set_bot_commands import set_dafault_commands
 from tgbot.services.database.utils import get_connection_string
 from tgbot import dialogs, middlewares, filters, handlers
