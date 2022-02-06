@@ -3,3 +3,5 @@ aioredis
 environs~=8.0.0
 asyncpg
 sqlalchemy~=1.4.0
+glQiwiApi
+aiogram_dialog

@@ -10,3 +10,6 @@ class ConfigMiddleware(BaseMiddleware):
 
     async def on_pre_process_message(self, message: types.Message, data: Dict[str, Any]):
         data["config"] = self.config
+        
+    async def on_pre_process_callback_query(self, message: types.Message, data: Dict[str, Any]):
+        data["config"] = self.config
