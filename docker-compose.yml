@@ -17,13 +17,14 @@ services:
     networks:
       - botnet
     depends_on:
-      - db
+      - database
   database:
     image: "postgres:13-alpine"
     container_name: "database"
     evironment:
-      POSTGRES_USER: $DB_USER
+      POSTGRES_USER: $DB_LOGIN
       POSTGRES_PASSWORD: $DB_PASS
+      POSTGRES_DB: $DB_NAME
     restart: unless-stopped
     ports:
       - 5432:5432
