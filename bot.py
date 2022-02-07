@@ -1,13 +1,14 @@
 import asyncio
 import logging
-import ssl
+# import ssl
 
-from aiohttp import web
+# from aiohttp import web
 
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
-from aiogram.dispatcher.webhook import get_new_configured_app
+# from aiogram.dispatcher.webhook import get_new_configured_app
+from aiogram.utils.executor import start_webhook
 from aiogram_dialog import DialogRegistry
 
 from sqlalchemy.orm import sessionmaker
@@ -67,15 +68,22 @@ async def main():
     await set_dafault_commands(bot)
 
     # webhook
-    await bot.set_webhook(config.webhook.webhook_url, certificate=open(config.webhook.webhook_ssl_cert, 'rb'))
-    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    context.load_cert_chain(config.webhook.webhook_ssl_cert, config.webhook.webhook_ssl_priv)
-    app = get_new_configured_app(dispatcher=dp, path=config.webhook.webhook_url)
+    await bot.set_webhook(config.webhook.webhook_url)
+    # context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    # context.load_cert_chain(config.webhook.webhook_ssl_cert, config.webhook.webhook_ssl_priv)
+    # app = get_new_configured_app(dispatcher=dp, path=config.webhook.webhook_url)
         
     # start
     try:
-        await dp.skip_updates()
-        web.run_app(app, host=config.webapp.webapp_host, port=config.webapp.webapp_port, ssl_context=context)
+        start_webhook(
+        dispatcher=dp,
+        webhook_path=config.webhook.webhook_ssl_cert,
+        skip_updates=True,
+        host=config.webapp.webapp_host,
+        port=config.webapp.webapp_port,
+        )
+        # await dp.skip_updates()
+        # web.run_app(app, host=config.webapp.webapp_host, port=config.webapp.webapp_port, ssl_context=context)
     finally:
         await dp.storage.close()
         await dp.storage.wait_closed()
