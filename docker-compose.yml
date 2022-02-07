@@ -10,18 +10,17 @@ services:
     - .:/usr/src/app/${BOT_NAME:-tg_bot}
     command: python -m bot
     restart: unless-stopped
-    ports:
-      - 8443:3001
     env_file:
       - ".env"
-    networks:
-      - botnet
     depends_on:
       - database
+      - nginx
+    networks:
+      - botnet
   database:
     image: "postgres:13-alpine"
-    container_name: "database"
-    evironment:
+    container_name: "${BOT_NAME:-database}"
+    environment:
       POSTGRES_USER: $DB_LOGIN
       POSTGRES_PASSWORD: $DB_PASS
       POSTGRES_DB: $DB_NAME
@@ -32,7 +31,24 @@ services:
       - botnet
     volumes:
       - ./pgdata:/var/lib/postgresql
-
+  nginx:
+    image: "nginx:alpine"
+    container_name: "${BOT_NAME:-server}"
+    restart: "unless-stopped"
+    tty: true
+    ports:
+      - 8443:3001
+    environment:
+      - NGINX_HOST: $IP
+      - NGINX_PORT: $WEBHOOK_PORT
+      - BOT_TOKEN: $BOT_TOKEN
+      - WEBAPP_HOST: $WEBAPP_HOST
+      - WEBAPP_PORT: $WEBAPP_PORT
+    depends_on:
+      - database
+    networks:
+      - botnet
+      
 
 networks:
   botnet:

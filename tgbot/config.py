@@ -68,7 +68,7 @@ def load_config(path: str = None):
         webhook=Webhook(
             webhook_ssl_cert=env.str('WEBHOOK_SSL_CERT'),
             webhook_ssl_priv=env.str('WEBHOOK_SSL_PRIV'),
-            webhook_url=f'https://{env.str("IP")}:{env.int("WEBHOOK_PORT")}/tgbot/{env.str("BOT_TOKEN")}'
+            webhook_url=f'https://{env.str("IP")}:{env.int("WEBHOOK_PORT")}/{env.str("BOT_TOKEN")}'
         ),
         webapp=Webapp(
             webapp_host=env.str('WEBAPP_HOST'),
