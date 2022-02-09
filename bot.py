@@ -4,20 +4,16 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
-from aiogram.utils.executor import start_webhook
-from aiogram_dialog import DialogRegistry
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-
-from glQiwiApi import QiwiWrapper
 
 from tgbot.config import load_config
 from tgbot.services.database.base import Base
 
 from tgbot.misc.set_bot_commands import set_dafault_commands
 from tgbot.services.database.utils import get_connection_string
-from tgbot import dialogs, middlewares, filters, handlers
+from tgbot import middlewares, filters, handlers
 
 
 logger = logging.getLogger(__name__)
@@ -51,28 +47,18 @@ async def main():
     bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
     dp = Dispatcher(bot, storage=storage)
     
-    wallet = QiwiWrapper(secret_p2p=config.qiwi.p2p_token)
-    registry = DialogRegistry(dp)  
-    
     # setup
-    middlewares.setup(dp, config, db_pool, wallet)
+    middlewares.setup(dp, config, db_pool)
     filters.setup(dp)
     handlers.setup(dp)
-    dialogs.setup(registry)
 
     # set commands
     await set_dafault_commands(bot)
 
-    # webhook
-    await bot.set_webhook(config.webhook.webhook_url)
-    
     # start
     try:
-        start_webhook(dispatcher=dp, 
-                      webhook_path=f'/{config.tg_bot.token}', 
-                      skip_updates=True, 
-                      host=config.webapp.webapp_host, 
-                      port=config.webapp.webapp_port)
+        await dp.skip_updates()
+        await dp.start_polling()
     finally:
         await dp.storage.close()
         await dp.storage.wait_closed()
