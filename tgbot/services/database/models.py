@@ -1,13 +1,18 @@
-from sqlalchemy import Column, BigInteger, Boolean, Integer, String, ARRAY
+from sqlalchemy import BigInteger, Boolean, Column, Integer, String
 
-from .base import TimedBaseModel
+from tgbot.services.database.base import TimedBaseModel
 
 
 class User(TimedBaseModel):
-    __tablename__ = 'Users'
+    __tablename__ = 'User'
     
-    user_id = Column(BigInteger, primary_key=True, unique=True, autoincrement=False)
+    id = Column(BigInteger, primary_key=True)
     full_name = Column(String(255), nullable=False)
- 
-    def __str__(self):
-        return f'user_id - {self.user_id}\nfull_name - {self.full_name}'
+    status = Column(Boolean, default=False, nullable=False)
+
+
+class Trash(TimedBaseModel):
+    __tablename__ = 'Trash'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255))

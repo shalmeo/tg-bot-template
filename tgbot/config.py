@@ -20,11 +20,6 @@ class TgBot:
 
 
 @dataclass
-class Qiwi:
-    p2p_token: str = None
-    
-    
-@dataclass
 class Config:
     tg_bot: TgBot
     db: DbConfig
@@ -46,5 +41,5 @@ def load_config(path: str = None):
             host=env.str('DB_HOST'),
             port=env.int('DB_PORT'),
             name=env.str('DB_NAME'),
-        ),
+        )
     )

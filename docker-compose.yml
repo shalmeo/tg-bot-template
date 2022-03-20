@@ -10,24 +10,3 @@ services:
     - .:/usr/src/app/${BOT_NAME:-tg_bot}
     command: python -m bot
     restart: unless-stopped
-    networks:
-      - botnet
-  database:
-    image: "postgres:13-alpine"
-    container_name: "database"
-    volumes:
-      - ./pgdata:/var/lib/postgresql
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: $DB_LOGIN
-      POSTGRES_PASSWORD: $DB_PASS
-      POSTGRES_DB: $DB_NAME
-    ports:
-      - 5432:5432
-    networks:
-      - botnet
-
-
-networks:
-  botnet:
-    driver: bridge

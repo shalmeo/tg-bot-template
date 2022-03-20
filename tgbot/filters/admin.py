@@ -1,18 +1,10 @@
 from aiogram import types
-from aiogram.dispatcher.filters import BoundFilter
-from aiogram.dispatcher.handler import ctx_data
+from aiogram.dispatcher.filters import BaseFilter
 
 from tgbot.config import Config
 
 
-class AdminFilter(BoundFilter):
-    key = 'is_admin'
-    is_admin: bool
-    
-    def __init__(self, is_admin):
-        self.is_admin = is_admin
-
-    async def check(self, message: types.Message):
-        data = ctx_data.get()
-        config: Config = data['config']
+class AdminFilter(BaseFilter):
+        
+    async def __call__(self, message: types.Message, config: Config) -> bool:
         return message.from_user.id in config.tg_bot.admin_ids

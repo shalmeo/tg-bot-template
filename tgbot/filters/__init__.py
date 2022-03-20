@@ -4,4 +4,4 @@ from .admin import AdminFilter
 
 
 def setup(dp: Dispatcher):
-    dp.filters_factory.bind(AdminFilter)
+    dp.message.bind_filter(AdminFilter)

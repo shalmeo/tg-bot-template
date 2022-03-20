@@ -1,9 +1,13 @@
-from aiogram import Dispatcher
+from aiogram import Dispatcher, Router
 
-from .private import start
-from .admin import admin
+from . import admin, private
+
 
 
 def setup(dp: Dispatcher):
-    for module in (start, admin):
-        module.setup(dp)
+    master_router = Router()
+    
+    for module in (admin, private):
+        module.setup(master_router)
+    
+    dp.include_router(master_router)

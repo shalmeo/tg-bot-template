@@ -1,24 +1,36 @@
-from aiogram import types
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from typing import Any, Awaitable, Callable, Dict
+
+from aiogram import BaseMiddleware
+from aiogram.types import TelegramObject, CallbackQuery, Message
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tgbot.services.database.models import User
 
 
+class AclMiddleware(BaseMiddleware):
 
-class ACLMiddleware(BaseMiddleware):
-    async def setup_chat(self, data: dict, tg_user: types.User):
+    async def __call__(
+            self,
+            handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+            event: Message | CallbackQuery,
+            data: Dict[str, Any]
+    ) -> Any:
         session: AsyncSession = data['session']
-        user = await session.get(User, tg_user.id)
+        telegram_user = event.from_user     
+        
+        user = await session.get(User, telegram_user.id)
+        
         if user is None:
-            user = User(tg_user.id, tg_user.full_name)
-            await session.merge(user)
+            user = await session.merge(
+                User(id=telegram_user.id,
+                     full_name=telegram_user.full_name)
+            )
             await session.commit()
+        
         data['user'] = user
-    
-
-    async def on_pre_process_message(self, message: types.Message, data: dict):
-        await self.setup_chat(data, message.from_user)
-
-    async def on_pre_process_callback_query(self, call: types.CallbackQuery, data: dict):
-        await self.setup_chat(data, call.from_user)
+        
+        result = await handler(event, data)
+        
+        data.pop('user')
+        return result

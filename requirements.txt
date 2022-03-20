@@ -1,4 +1,4 @@
-aiogram<3.0
-aioredis
+aiogram~=3.0.0b2
 environs~=8.0.0
-sqlalchemy~=1.4.0
+sqlalchemy
+aioredis~=2.0.1
