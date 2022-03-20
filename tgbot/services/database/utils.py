@@ -1,7 +1,7 @@
-from tgbot.config import DbConfig
+from tgbot import config
 
 
-def get_connection_string(db: DbConfig, async_fallback: bool = False) -> str:
+def get_connection_string(db: config.Database, async_fallback: bool = False) -> str:
     result = (
         f"postgresql+asyncpg://{db.login}:{db.password}@{db.host}:{db.port}/{db.name}"
     )

@@ -32,8 +32,14 @@ async def main():
     session_pool = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
     # Creating
-    storage = RedisStorage() if config.tg_bot.use_redis else MemoryStorage()
-    bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
+    if config.bot.use_redis:
+        storage = RedisStorage.from_url(
+            url=f'redis://{config.redis.host}:{config.redis.port}'
+        )
+    else:
+        storage = MemoryStorage()
+
+    bot = Bot(token=config.bot.token, parse_mode='HTML')
     dp = Dispatcher(storage=storage)
 
     # setup
